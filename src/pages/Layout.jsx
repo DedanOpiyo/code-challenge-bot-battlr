@@ -8,7 +8,7 @@ export default function Layout() {
   console.log('..IN APP.JSX BOTDATA:', botData)
 
   useEffect(() => {
-    fetch(`http://localhost:3000/bots`)
+    fetch(`http://localhost:5000/bots`)
     .then(res => res.json())
     .then(data => { //console.log(data)
       setBotData(() => data)

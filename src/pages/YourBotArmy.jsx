@@ -18,7 +18,7 @@ function YourBotArmy() {
         const filteredRobots = listedRobots.filter((robot) => robot !== bot)
         setListedRobots(() => filteredRobots)
 
-        fetch(`http://localhost:3000/bots/${bot.id}`, {
+        fetch(`http://localhost:5000/bots/${bot.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

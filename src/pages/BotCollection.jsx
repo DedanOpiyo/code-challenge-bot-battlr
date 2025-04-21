@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { format } from "date-fns";
 import { useOutletContext } from "react-router-dom";
 import Botcard from "../components/Botcard";
@@ -8,11 +8,21 @@ import SortBar from "../components/SortBar";
 function BotCollection() {
     const {botData, setBotData} = useOutletContext()
     const {listedRobots, setListedRobots} = useOutletContext()
-    console.log('BOTDATA IN BOTCOLLECTION:', botData)
+    // console.log('BOTDATA IN BOTCOLLECTION:', botData)
     const [renderBotSpecs, setRenderBotSpecs] = useState({botstatus:false, robot: null}) // State holding bot data, passed as prop to BotSpecs component.
+    const [sortedBotData, setSortedBotData] = useState([]); // Manages bots filtered by classNames. Will be mapped for display in place of botData.
+    const [sortByNumbers, setSortByNumbers] = useState([]); // Manage bots filtered by Health, Damage or Armor.
+    console.log('SORTBYNUMBERS ==:', sortByNumbers)
 
     // Function to Enlist bots.
     function enListBot(botParam) {
+        // Loop through listed robots, if class of selected robot is already listed, alert the user.
+        const isClassListed = listedRobots.some((botL) => botL.bot_class === botParam.bot_class)
+        if (isClassListed) {
+            alert(`A bot from (${botParam.bot_class}) class is already listed!`);
+            return;
+        }
+
         // check if bot is already enlisted.
         if (listedRobots.length > 0 && listedRobots[0] && Object.keys(listedRobots[0]).length > 0) {
 
@@ -45,31 +55,38 @@ function BotCollection() {
         return setRenderBotSpecs(() => ({...renderBotSpecs, botstatus: !renderBotSpecs.botstatus, robot: robot }))      
     }
 
+    // Update sortByNumbers state when botData or sortedBotData changes
+    useEffect(() => {
+        setSortByNumbers(sortedBotData || botData);
+    }, [])
+
     // Function to sort botData.
     const handleSort = (botKey) => {
         console.log('SORTBOTDATA CALLED:', botKey)
-        console.log("Sample values ==========", botData.map(bot => bot[botKey]));
-        console.log(botData[0]);
-        console.log("Damage:", botData[0].damage);
-        console.log("Armor:", botData[0].armor);
-        const sortedBots = [...botData].sort((a, b) => {
+        console.log("Sample values ==========", sortByNumbers.map(bot => bot[botKey]));
+        console.log(sortByNumbers[0]);
+        console.log("Damage:", sortByNumbers[0].damage);
+        console.log("Armor:", sortByNumbers[0].armor);
+        const sortedBots = [...sortByNumbers].sort((a, b) => {
             const bValue = b[botKey]  
             console.log(bValue)
             const aValue = a[botKey]
             console.log(aValue)
             bValue - aValue;
         });
-        setBotData(sortedBots);
+        console.log("SORTED BOTS BY NUMBERS ==== ==== ==", sortedBots);
+        setSortByNumbers(sortedBots);
     };
 
-    // Show bots for particular class.
+    // Function to sort bots by class names
     const getBotsByClass = (botClass) => {
+        console.log('==CLICKED CLASS in SORT .........', botClass); 
         const filteredByClass =  botData.filter(bot => bot.bot_class === botClass)
-        setBotData(filteredByClass)
-      }
+        setSortedBotData(filteredByClass) // This changes from time to time, so we update the entire state(no shallow coppy).
+    }
 
-    // Loop through botData obtaining Botcard for each bot.   
-    const botCard = botData.map((bot, index) => {
+    // Loop through botData obtaining Botcard for each bot.  Prioritize sortedBotData over botData.
+    const botCard = (sortByNumbers.length > 0 ? sortByNumbers : sortedBotData.length > 0 ? sortedBotData : botData).map((bot, index) => {
         const botcardStructure = <div key={index} onClick={()=> showBotSpecs(bot)} style={{background: 'linear-gradient(145deg, #f0f0f0, #dcdcdc)', boxShadow: `8px 8px 15px #b8b8b8, 5px -5px 15px #ffffff`}} className='flex flex-col items-center w-[20em]  p-5 rounded-[18px]'>
              <Botcard key={bot.id} bot={bot} />
         </div>
