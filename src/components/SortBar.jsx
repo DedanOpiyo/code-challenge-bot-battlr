@@ -1,14 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 export default function SortBar({botData, sortBotData, getBotsByClass}) {
   const initialClasses = useRef([]);
-  // console.log('botdata in SORT .........', initialClasses.current); 
-
-  const handleSort = (event) => {
-    console.log(event.target); 
-    const target = event.target.textContent.toLowerCase(); // Get value of DOM element selected.
-    sortBotData(target)
-  };
 
   // With each change in botData, ensure that classes are referenced the first time botData is iterated.
   useEffect(() => {
@@ -39,9 +32,9 @@ export default function SortBar({botData, sortBotData, getBotsByClass}) {
         <div className='font-bold'>Sort By:</div>
 
         <div className='cursor-pointer'>
-          <div onClick={handleSort}>Health</div>
-          <div onClick={handleSort}>Damage </div>
-          <div onClick={handleSort}>Armor </div>
+          <div onClick={() => sortBotData("health")}>Health</div>
+          <div onClick={() => sortBotData("damage")}>Damage </div>
+          <div onClick={() => sortBotData("armor")}>Armor </div>
         </div>
       </div>
 

@@ -4,8 +4,6 @@ import { Outlet, Link } from 'react-router-dom'
 export default function Layout() {
   const [botData, setBotData] = useState([]) // State to manage botData between components, (BotCollection, and YourBotArmy). 
   const [listedRobots, setListedRobots] = useState([]); // State to pass down listed bots from BotCollection to YourBotArmy component.
-  console.log('LISTEDROBOTS STATE IN LAYOUT:', listedRobots)
-  console.log('..IN APP.JSX BOTDATA:', botData)
 
   useEffect(() => {
     fetch(`http://localhost:5000/bots`)

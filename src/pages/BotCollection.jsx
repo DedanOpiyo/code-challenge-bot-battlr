@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 // import { format } from "date-fns";
 import { useOutletContext } from "react-router-dom";
 import Botcard from "../components/Botcard";
@@ -56,26 +56,29 @@ function BotCollection() {
     }
 
     // Update sortByNumbers state when botData or sortedBotData changes
+    useMemo(() => {
+        if (sortedBotData.length < 1) {
+            setSortByNumbers(botData);
+        }
+    }, [botData])
+
+    // Update sortByNumbers state when botData or sortedBotData changes
     useEffect(() => {
         setSortByNumbers(sortedBotData || botData);
-    }, [])
+    }, [botData, sortedBotData])
 
     // Function to sort botData.
     const handleSort = (botKey) => {
-        console.log('SORTBOTDATA CALLED:', botKey)
-        console.log("Sample values ==========", sortByNumbers.map(bot => bot[botKey]));
-        console.log(sortByNumbers[0]);
-        console.log("Damage:", sortByNumbers[0].damage);
-        console.log("Armor:", sortByNumbers[0].armor);
-        const sortedBots = [...sortByNumbers].sort((a, b) => {
-            const bValue = b[botKey]  
-            console.log(bValue)
-            const aValue = a[botKey]
-            console.log(aValue)
-            bValue - aValue;
-        });
-        console.log("SORTED BOTS BY NUMBERS ==== ==== ==", sortedBots);
-        setSortByNumbers(sortedBots);
+        if (botKey === 'health') {
+            const sortedBots = [...sortByNumbers].sort((a, b) => b.health - a.health);
+            setSortByNumbers(sortedBots);
+        } else if (botKey === 'damage') {
+            const sortedBots = [...sortByNumbers].sort((a, b) => b.damage - a.damage);
+            setSortByNumbers(sortedBots);
+        } else if (botKey === 'armor') {
+            const sortedBots = [...sortByNumbers].sort((a, b) => b.armor - a.armor);
+            setSortByNumbers(sortedBots);
+        }
     };
 
     // Function to sort bots by class names
